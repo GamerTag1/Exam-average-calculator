@@ -55,17 +55,6 @@ document.addEventListener("DOMContentLoaded", function() {
   }
   updateLanguage();
 
-  // Dark mode toggle
-  document.getElementById('darkModeToggle').addEventListener('change', function() {
-    if (this.checked) {
-      document.body.classList.add('dark-mode');
-      document.getElementById('darkModeLabel').innerText = "Light Mode";
-    } else {
-      document.body.classList.remove('dark-mode');
-      document.getElementById('darkModeLabel').innerText = "Dark Mode";
-    }
-  });
-
   // Language list event listeners
   document.querySelectorAll('.lang-item').forEach(item => {
     item.addEventListener('click', function() {
@@ -103,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function() {
     tdCoef.innerText = subject.coefficient;
     tr.appendChild(tdCoef);
 
-    // Exam Score
+    // Exam Score Input
     const tdExam = document.createElement("td");
     const inputExam = document.createElement("input");
     inputExam.type = "number";
@@ -113,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function() {
     tdExam.appendChild(inputExam);
     tr.appendChild(tdExam);
 
-    // CC Score
+    // CC Score Input
     const tdCC = document.createElement("td");
     const inputCC = document.createElement("input");
     inputCC.type = "number";
@@ -123,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function() {
     tdCC.appendChild(inputCC);
     tr.appendChild(tdCC);
 
-    // TP Score if applicable
+    // TP Score Input (if applicable)
     const tdTP = document.createElement("td");
     if (subject.hasTP) {
       const inputTP = document.createElement("input");
@@ -132,7 +121,6 @@ document.addEventListener("DOMContentLoaded", function() {
       inputTP.className = "form-control";
       inputTP.id = "tp_" + index;
       tdTP.appendChild(inputTP);
-      // Listen for changes to store data
       inputTP.addEventListener("input", updateStorage);
     } else {
       tdTP.innerText = "N/A";
@@ -141,7 +129,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     tbody.appendChild(tr);
 
-    // Add listeners for exam & cc inputs
+    // Save exam & CC changes
     inputExam.addEventListener("input", updateStorage);
     inputCC.addEventListener("input", updateStorage);
   });
@@ -202,6 +190,7 @@ document.addEventListener("DOMContentLoaded", function() {
       const ccScore = parseFloat(document.getElementById("cc_" + index).value) || 0;
       let average = 0;
 
+      // Weighted average: exam=60%, cc=40% (or 60/20/20 if TP)
       if (subject.hasTP) {
         const tpScore = parseFloat(document.getElementById("tp_" + index).value) || 0;
         average = (examScore * 0.6) + (ccScore * 0.2) + (tpScore * 0.2);
@@ -209,6 +198,7 @@ document.addEventListener("DOMContentLoaded", function() {
         average = (examScore * 0.6) + (ccScore * 0.4);
       }
 
+      // Color-coded result
       const color = average >= 10 ? "green" : "red";
       resultsHtml += `<li>${subject.name}: <span style="color: ${color}">${average.toFixed(2)}</span></li>`;
 
@@ -218,6 +208,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     resultsHtml += "</ul>";
 
+    // Overall average
     const overallAverage = overallWeightedSum / totalCoefficients;
     const overallColor = overallAverage >= 10 ? "green" : "red";
     resultsHtml += `<h3>${overallTitle} <span style="color: ${overallColor}">${overallAverage.toFixed(2)}</span></h3>`;

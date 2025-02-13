@@ -13,9 +13,8 @@
 </head>
 <body>
   <div class="container">
-    <!-- Top Controls: Language List and Dark Mode Toggle -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <!-- Language List -->
+    <!-- Language Selector (Top-Right) -->
+    <div class="d-flex justify-content-end align-items-center mb-3">
       <div class="language-selector">
         <ul class="language-list">
           <li class="lang-item" data-lang="en" title="English">
@@ -29,21 +28,13 @@
           </li>
         </ul>
       </div>
-      <!-- Dark Mode Toggle Switch -->
-      <div class="dark-mode-switch d-flex align-items-center">
-        <label class="switch">
-          <input type="checkbox" id="darkModeToggle">
-          <span class="slider round"></span>
-        </label>
-        <span id="darkModeLabel" class="ml-2">Dark Mode</span>
-      </div>
     </div>
 
     <h1 class="text-center" id="pageTitle">Exam Average Calculator</h1>
     <p class="text-center" id="pageSubtitle">Calculate your exam average easily!</p>
 
-    <!-- Wrap the table in a .table-container for better responsiveness -->
     <form id="calcForm">
+      <!-- Responsive container with fixed layout for smaller phones -->
       <div class="table-container">
         <table class="table table-bordered" id="scoresTable">
           <thead>
@@ -67,12 +58,13 @@
       </div>
     </form>
 
+    <!-- Results will appear here -->
     <div id="resultDiv" class="result"></div>
   </div>
 
   <!-- Footer at bottom right -->
   <footer class="footer-bottom-right">
-    <p>&copy; Walid Copyright 2025</p>
+    <p>Walid &copy; 2025</p>
   </footer>
 
   <!-- jQuery and Bootstrap JS -->

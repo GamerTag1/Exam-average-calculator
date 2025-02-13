@@ -1,10 +1,10 @@
-/* ================= LIGHT MODE (Teal Theme) ================= */
+/* ================= GLOBAL STYLES ================= */
 body {
+  font-family: Arial, sans-serif;
   background-color: #e0f2f1;  /* Light teal background */
-  padding-top: 40px;
-  font-size: 1.1em;
   color: #333;
-  margin: 0; /* Remove default margin to ensure full width usage */
+  margin: 0;
+  padding: 40px 0;
 }
 
 .container {
@@ -30,25 +30,35 @@ p {
   margin-bottom: 30px;
 }
 
-/* Table container for responsive overflow */
+/* ================= TABLE & RESPONSIVENESS ================= */
 .table-container {
   width: 100%;
-  overflow-x: auto; /* Scroll horizontally if table is too wide */
+  margin-bottom: 20px;
+  /* If you prefer horizontal scrolling on smaller devices, keep overflow-x: auto */
+  /* overflow-x: auto; */
 }
 
-table {
-  margin-bottom: 30px;
-  font-size: 1.1em;
+.table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;  /* So columns remain fixed-width for smaller screens */
 }
 
-table td, table th {
-  padding: 15px;
+.table th,
+.table td {
+  padding: 12px;
   text-align: center;
+  border: 1px solid #ddd;
 }
 
-/* Results Box */
+/* Force columns to have specific widths in fixed layout */
+.table thead th:nth-child(1) { width: 25%; }  /* Subject */
+.table thead th:nth-child(2) { width: 15%; }  /* Coefficient */
+.table thead th:nth-child(3) { width: 20%; }  /* Exam */
+.table thead th:nth-child(4) { width: 20%; }  /* CC */
+.table thead th:nth-child(5) { width: 20%; }  /* TP */
+
+/* ================= RESULTS BOX ================= */
 .result {
   margin-top: 30px;
   text-align: center;
@@ -78,7 +88,7 @@ table td, table th {
   font-size: 1.1em;
 }
 
-/* Calculate Average Button with Gradient */
+/* ================= CALCULATE BUTTON ================= */
 #calcButton {
   background: linear-gradient(45deg, #004d40, #00695c);
   color: #fff;
@@ -87,7 +97,7 @@ table td, table th {
   font-size: 1.2em;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
+  transition: transform 0.3s;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   margin-top: 20px;
 }
@@ -96,97 +106,19 @@ table td, table th {
   transform: scale(1.05);
 }
 
-/* ================= DARK MODE (Black/Gray) ================= */
-body.dark-mode {
-  background-color: #000; /* True black background */
-  color: #ddd;            /* Light text for contrast */
+/* ================= FOOTER ================= */
+.footer-bottom-right {
+  position: fixed;
+  bottom: 10px;
+  right: 20px;
+  font-size: 14px;
+  font-weight: bold;
 }
 
-body.dark-mode .container {
-  background: #222;       /* Dark gray container */
-  box-shadow: 0 0 20px rgba(255,255,255,0.1);
-}
-
-body.dark-mode h1 {
-  color: #dadada;
-}
-
-body.dark-mode p {
-  color: #ccc;
-}
-
-body.dark-mode table,
-body.dark-mode th,
-body.dark-mode td {
-  border-color: #666;
-}
-
-body.dark-mode .result {
-  background-color: #4e4e4e;
-  border-color: #555;
-}
-
-body.dark-mode .result ul li {
-  background: #444;
-  color: #eee;
-}
-
-/* Dark mode button gradient */
-body.dark-mode #calcButton {
-  background: linear-gradient(45deg, #444, #666);
-  color: #ffffff;
-}
-
-body.dark-mode #calcButton:hover {
-  background: linear-gradient(45deg, #555, #777);
-}
-
-/* ================= DARK MODE TOGGLE SWITCH ================= */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
-  margin-right: 10px;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #ccc;
-  transition: 0.4s;
-  border-radius: 34px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 26px; width: 26px;
-  left: 4px; bottom: 4px;
-  background-color: white;
-  transition: 0.4s;
-  border-radius: 50%;
-}
-
-input:checked + .slider {
-  background-color: #2e7d32;
-}
-
-input:checked + .slider:before {
-  transform: translateX(26px);
-}
-
-/* ================= LANGUAGE LIST ================= */
+/* ================= LANGUAGE SELECTOR ================= */
 .language-selector {
   display: flex;
-  align-items: center;
+  justify-content: flex-end;
 }
 
 .language-list {
@@ -215,68 +147,65 @@ input:checked + .slider:before {
 }
 
 .flag-icon {
-  font-size: 18px; 
+  font-size: 18px;
 }
 
 .lang-code {
   font-weight: bold;
 }
 
-/* Dark Mode Text Color Fix */
-body.dark-mode,
-body.dark-mode h1,
-body.dark-mode p,
-body.dark-mode table,
-body.dark-mode th,
-body.dark-mode td,
-body.dark-mode .lang-code,
-body.dark-mode .flag-icon {
-  color: #c4c4c4 !important;
-}
-
 /* ================= MOBILE RESPONSIVENESS ================= */
 @media (max-width: 768px) {
-  /* Center Header Items (Dark Mode & Language) */
-  .d-flex.justify-content-between.align-items-center.mb-3 {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+  .container {
+    padding: 20px;
+    margin: 0 10px;
   }
 
-  /* Center Dark Mode Switch */
-  .dark-mode-switch {
-    justify-content: center;
-    margin-bottom: 10px;
-  }
-
-  /* Make Language Buttons stack horizontally (centered) */
-  .language-selector {
-    justify-content: center;
-  }
-  .language-list {
-    flex-direction: row;
-    justify-content: center;
-    gap: 5px;
-  }
-
-  /* Adjust Table for Mobile */
-  .table {
+  /* Decrease table text & padding so it fits on phone screens */
+  .table th, .table td {
+    padding: 8px;
     font-size: 0.9em;
   }
-  .table th, .table td {
-    padding: 6px;
+
+  /* Adjust columns to fit better on phone */
+  .table thead th:nth-child(1) { width: 26%; }
+  .table thead th:nth-child(2) { width: 14%; }
+  .table thead th:nth-child(3) { width: 20%; }
+  .table thead th:nth-child(4) { width: 20%; }
+  .table thead th:nth-child(5) { width: 20%; }
+
+  #calcButton {
+    font-size: 1em;
+    padding: 10px 20px;
   }
 
-  /* Center the Result Box */
-  #resultDiv {
-    text-align: center;
-    font-size: 1.2em;
+  .result h3 {
+    font-size: 1.5em;
   }
 
-  /* Fix Footer on Small Screens */
+  .result ul li {
+    font-size: 1em;
+    padding: 10px;
+  }
+
   .footer-bottom-right {
     position: static;
     text-align: center;
     margin-top: 20px;
   }
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* So columns remain fixed-width */
+}
+
+/* Force columns to wrap text if it doesn't fit */
+.table th, .table td {
+  white-space: normal;      /* Allow wrapping */
+  word-wrap: break-word;    /* Break long words */
+  overflow-wrap: break-word;/* Alternative property */
+  text-align: center;
+  padding: 12px;
+  border: 1px solid #ddd;
 }
