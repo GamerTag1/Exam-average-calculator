@@ -30,18 +30,16 @@ p {
   margin-bottom: 30px;
 }
 
-/* ================= TABLE & RESPONSIVENESS ================= */
+/* Table container for responsiveness */
 .table-container {
   width: 100%;
   margin-bottom: 20px;
-  /* If you prefer horizontal scrolling on smaller devices, keep overflow-x: auto */
-  /* overflow-x: auto; */
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;  /* So columns remain fixed-width for smaller screens */
+  table-layout: fixed; /* Force columns to stay within phone width */
 }
 
 .table th,
@@ -49,14 +47,19 @@ p {
   padding: 12px;
   text-align: center;
   border: 1px solid #ddd;
+
+  /* Allow text to wrap if it's too long */
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
-/* Force columns to have specific widths in fixed layout */
-.table thead th:nth-child(1) { width: 25%; }  /* Subject */
-.table thead th:nth-child(2) { width: 15%; }  /* Coefficient */
-.table thead th:nth-child(3) { width: 20%; }  /* Exam */
-.table thead th:nth-child(4) { width: 20%; }  /* CC */
-.table thead th:nth-child(5) { width: 20%; }  /* TP */
+/* Force specific column widths to help fit on small screens */
+.table thead th:nth-child(1) { width: 25%; }
+.table thead th:nth-child(2) { width: 15%; }
+.table thead th:nth-child(3) { width: 20%; }
+.table thead th:nth-child(4) { width: 20%; }
+.table thead th:nth-child(5) { width: 20%; }
 
 /* ================= RESULTS BOX ================= */
 .result {
@@ -161,13 +164,11 @@ p {
     margin: 0 10px;
   }
 
-  /* Decrease table text & padding so it fits on phone screens */
   .table th, .table td {
     padding: 8px;
     font-size: 0.9em;
   }
 
-  /* Adjust columns to fit better on phone */
   .table thead th:nth-child(1) { width: 26%; }
   .table thead th:nth-child(2) { width: 14%; }
   .table thead th:nth-child(3) { width: 20%; }
@@ -193,19 +194,4 @@ p {
     text-align: center;
     margin-top: 20px;
   }
-}
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed; /* So columns remain fixed-width */
-}
-
-/* Force columns to wrap text if it doesn't fit */
-.table th, .table td {
-  white-space: normal;      /* Allow wrapping */
-  word-wrap: break-word;    /* Break long words */
-  overflow-wrap: break-word;/* Alternative property */
-  text-align: center;
-  padding: 12px;
-  border: 1px solid #ddd;
 }
