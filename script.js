@@ -40,18 +40,18 @@ document.addEventListener("DOMContentLoaded", function() {
   };
 
   // ================= 2. SUBJECTS WITH MULTIPLE LANGUAGES =================
-  // Each subject has translations for name in EN, FR, AR + coefficient + hasTP
+  // Each subject includes translations for its name plus a default coefficient and hasTP flag.
   const subjects = [
-    { en: "Analysis",       fr: "Analyse",        ar: "تحليل",    coefficient: 4, hasTP: false },
-    { en: "Chemistry",      fr: "Chimie",         ar: "كيمياء",   coefficient: 3, hasTP: true  },
-    { en: "Computer Science", fr: "Informatique", ar: "علوم الحاسوب", coefficient: 3, hasTP: false },
-    { en: "English",        fr: "Anglais",        ar: "انجليزية", coefficient: 1, hasTP: false },
-    { en: "Fluid Mechanic", fr: "Mécanique des Fluides", ar: "ميكانيك الموائع", coefficient: 3, hasTP: true },
-    { en: "French",         fr: "Français",       ar: "فرنسية",   coefficient: 1, hasTP: false },
-    { en: "General Electric", fr: "Électricité Générale", ar: "كهرباء عامة", coefficient: 3, hasTP: true },
-    { en: "Engineering",    fr: "Génie",          ar: "هندسة",    coefficient: 3, hasTP: false },
-    { en: "Numerical Analysis", fr: "Analyse Numérique", ar: "تحليل عددي", coefficient: 2, hasTP: false },
-    { en: "Physics",        fr: "Physique",       ar: "فيزياء",   coefficient: 4, hasTP: true },
+    { en: "Analysis",       fr: "Analyse",              ar: "تحليل",         coefficient: 4, hasTP: false },
+    { en: "Chemistry",      fr: "Chimie",               ar: "كيمياء",        coefficient: 3, hasTP: true  },
+    { en: "Computer Science", fr: "Informatique",      ar: "علوم الحاسوب",   coefficient: 3, hasTP: false },
+    { en: "English",        fr: "Anglais",              ar: "انجليزية",       coefficient: 1, hasTP: false },
+    { en: "Fluid Mechanic", fr: "Mécanique des Fluides", ar: "ميكانيك الموائع", coefficient: 3, hasTP: true  },
+    { en: "French",         fr: "Français",             ar: "فرنسية",        coefficient: 1, hasTP: false },
+    { en: "General Electric", fr: "Électricité Générale", ar: "كهرباء عامة",   coefficient: 3, hasTP: true  },
+    { en: "Engineering",    fr: "Génie",                ar: "هندسة",         coefficient: 3, hasTP: false },
+    { en: "Numerical Analysis", fr: "Analyse Numérique", ar: "تحليل عددي",    coefficient: 2, hasTP: false },
+    { en: "Physics",        fr: "Physique",             ar: "فيزياء",        coefficient: 4, hasTP: true  },
     { en: "Rational Mechanic", fr: "Mécanique Rationnelle", ar: "ميكانيك نظري", coefficient: 3, hasTP: false }
   ];
 
@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // ================= 3. LANGUAGE SWITCHING FOR UI & SUBJECT NAMES =================
   function updateLanguage() {
-    // 3A. Update Interface Text
+    // Update UI text
     const dict = languages[currentLanguage];
     document.getElementById('pageTitle').innerText = dict.pageTitle;
     document.getElementById('pageSubtitle').innerText = dict.pageSubtitle;
@@ -70,28 +70,43 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('thTP').innerText = dict.thTP;
     document.getElementById('calcButton').innerText = dict.calcButton;
 
-    // 3B. Re-render subjects table with new language
+    // Re-render subjects table with new language
     renderSubjects();
-    // 3C. Reload stored input values (so we don't lose them)
+    // Reload stored input values to preserve user data
     loadStorage();
   }
+  updateLanguage();
+
+  // Language list event listeners
+  document.querySelectorAll('.lang-item').forEach(item => {
+    item.addEventListener('click', function() {
+      currentLanguage = this.getAttribute('data-lang');
+      updateLanguage();
+    });
+  });
 
   // ================= 4. RENDER SUBJECTS TABLE DYNAMICALLY =================
   function renderSubjects() {
     const tbody = document.getElementById("subjectsTable");
-    tbody.innerHTML = ""; // Clear old rows
+    tbody.innerHTML = ""; // Clear existing rows
 
     subjects.forEach((subject, index) => {
       const tr = document.createElement("tr");
 
-      // Subject name in the current language
+      // Subject name in current language
       const tdName = document.createElement("td");
       tdName.innerText = subject[currentLanguage];
       tr.appendChild(tdName);
 
-      // Coefficient
+      // Coefficient (editable for all subjects)
       const tdCoef = document.createElement("td");
-      tdCoef.innerText = subject.coefficient;
+      const inputCoef = document.createElement("input");
+      inputCoef.type = "number";
+      inputCoef.step = "0.1";
+      inputCoef.className = "form-control";
+      inputCoef.value = subject.coefficient;
+      inputCoef.id = "coef_" + index;
+      tdCoef.appendChild(inputCoef);
       tr.appendChild(tdCoef);
 
       // Exam Score Input
@@ -123,7 +138,6 @@ document.addEventListener("DOMContentLoaded", function() {
         inputTP.className = "form-control";
         inputTP.id = "tp_" + index;
         tdTP.appendChild(inputTP);
-        // Save changes to localStorage
         inputTP.addEventListener("input", updateStorage);
       } else {
         tdTP.innerText = "N/A";
@@ -132,7 +146,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
       tbody.appendChild(tr);
 
-      // Add listeners for exam & CC inputs
+      // Attach storage update listeners
+      inputCoef.addEventListener("input", function() {
+        subject.coefficient = parseFloat(this.value) || subject.coefficient;
+        updateStorage();
+      });
       inputExam.addEventListener("input", updateStorage);
       inputCC.addEventListener("input", updateStorage);
     });
@@ -143,28 +161,35 @@ document.addEventListener("DOMContentLoaded", function() {
     let examValues = [];
     let ccValues = [];
     let tpValues = [];
+    let coefValues = [];
 
     subjects.forEach((subject, index) => {
-      const examVal = document.getElementById("exam_" + index)?.value || "";
-      const ccVal   = document.getElementById("cc_" + index)?.value || "";
-      examValues.push(examVal);
-      ccValues.push(ccVal);
+      const examField = document.getElementById("exam_" + index);
+      const ccField   = document.getElementById("cc_" + index);
+      examValues.push(examField ? examField.value : "");
+      ccValues.push(ccField ? ccField.value : "");
+
       if (subject.hasTP) {
-        const tpVal = document.getElementById("tp_" + index)?.value || "";
-        tpValues.push(tpVal);
+        const tpField = document.getElementById("tp_" + index);
+        tpValues.push(tpField ? tpField.value : "");
       } else {
         tpValues.push("");
       }
+
+      const coefField = document.getElementById("coef_" + index);
+      coefValues.push(coefField ? coefField.value : subject.coefficient);
     });
     localStorage.setItem("exam_scores", JSON.stringify(examValues));
     localStorage.setItem("cc_scores", JSON.stringify(ccValues));
     localStorage.setItem("tp_scores", JSON.stringify(tpValues));
+    localStorage.setItem("coef_scores", JSON.stringify(coefValues));
   }
 
   function loadStorage() {
     const examValues = JSON.parse(localStorage.getItem("exam_scores") || "[]");
     const ccValues   = JSON.parse(localStorage.getItem("cc_scores") || "[]");
     const tpValues   = JSON.parse(localStorage.getItem("tp_scores") || "[]");
+    const coefValues = JSON.parse(localStorage.getItem("coef_scores") || "[]");
 
     subjects.forEach((subject, index) => {
       const examField = document.getElementById("exam_" + index);
@@ -177,25 +202,29 @@ document.addEventListener("DOMContentLoaded", function() {
       if (ccField && ccValues[index] !== undefined) {
         ccField.value = ccValues[index];
       }
-      if (tpField && tpValues[index] !== undefined) {
+      if (subject.hasTP && tpField && tpValues[index] !== undefined) {
         tpField.value = tpValues[index];
+      }
+      const coefField = document.getElementById("coef_" + index);
+      if (coefField && coefValues[index] !== undefined) {
+        coefField.value = coefValues[index];
+        subject.coefficient = parseFloat(coefValues[index]) || subject.coefficient;
       }
     });
   }
+  window.addEventListener("load", loadStorage);
 
   // ================= 6. CALCULATE AVERAGES =================
   function calculateAverages() {
     let overallWeightedSum = 0;
     let totalCoefficients  = 0;
 
-    // Build results
     const dict         = languages[currentLanguage];
     const resultsTitle = dict.resultsTitle;
     const overallTitle = dict.overallTitle;
     let resultsHtml    = `<h3>${resultsTitle}</h3><ul>`;
 
     subjects.forEach((subject, index) => {
-      // Retrieve user input
       const examScore = parseFloat(document.getElementById("exam_" + index)?.value) || 0;
       const ccScore   = parseFloat(document.getElementById("cc_" + index)?.value)   || 0;
       let average     = 0;
@@ -207,7 +236,6 @@ document.addEventListener("DOMContentLoaded", function() {
         average = (examScore * 0.6) + (ccScore * 0.4);
       }
 
-      // Color-coded
       const color = average >= 10 ? "green" : "red";
       resultsHtml += `<li>${subject[currentLanguage]}: <span style="color: ${color}">${average.toFixed(2)}</span></li>`;
 
@@ -217,53 +245,46 @@ document.addEventListener("DOMContentLoaded", function() {
 
     resultsHtml += "</ul>";
 
-    // Overall average
     const overallAverage = overallWeightedSum / totalCoefficients;
     const overallColor   = overallAverage >= 10 ? "green" : "red";
     resultsHtml += `<h3>${overallTitle} <span style="color: ${overallColor}">${overallAverage.toFixed(2)}</span></h3>`;
-
     document.getElementById("resultDiv").innerHTML = resultsHtml;
   }
 
   // ================= 7. RESET FUNCTION =================
   function resetCalculator() {
-    // 7A. Clear all inputs
+    // Clear all inputs and reset coefficients to default values
     subjects.forEach((subject, index) => {
       const examField = document.getElementById("exam_" + index);
       const ccField   = document.getElementById("cc_" + index);
       const tpField   = document.getElementById("tp_" + index);
+      const coefField = document.getElementById("coef_" + index);
 
       if (examField) examField.value = "";
-      if (ccField)   ccField.value   = "";
-      if (tpField)   tpField.value   = "";
+      if (ccField)   ccField.value = "";
+      if (tpField)   tpField.value = "";
+      if (coefField) {
+        coefField.value = subject[currentLanguage] ? subject.coefficient : subject.coefficient;
+      }
     });
-
-    // 7B. Clear localStorage
     localStorage.removeItem("exam_scores");
     localStorage.removeItem("cc_scores");
     localStorage.removeItem("tp_scores");
-
-    // 7C. Clear results
+    localStorage.removeItem("coef_scores");
     document.getElementById("resultDiv").innerHTML = "";
   }
 
   // ================= 8. INITIALIZE EVERYTHING =================
-  // Render the table for the first time
   renderSubjects();
-  // Load stored values
   loadStorage();
-
-  // Hook up the calculation button
   document.getElementById("calcButton").addEventListener("click", calculateAverages);
+  document.getElementById("resetButton").addEventListener("click", resetCalculator);
 
-  // Hook up language switching
+  // Hook up language switching (already added above)
   document.querySelectorAll('.lang-item').forEach(item => {
     item.addEventListener('click', function() {
       currentLanguage = this.getAttribute('data-lang');
       updateLanguage();
     });
   });
-
-  // Hook up the RESET button
-  document.getElementById("resetButton").addEventListener("click", resetCalculator);
 });

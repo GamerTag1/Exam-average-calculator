@@ -30,7 +30,7 @@ p {
   margin-bottom: 30px;
 }
 
-/* Table container for responsiveness */
+/* ================= TABLE & RESPONSIVENESS ================= */
 .table-container {
   width: 100%;
   margin-bottom: 20px;
@@ -47,19 +47,17 @@ p {
   padding: 12px;
   text-align: center;
   border: 1px solid #ddd;
-
-  /* Allow text to wrap if it's too long */
   white-space: normal;
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
 
-/* Force specific column widths to help fit on small screens */
-.table thead th:nth-child(1) { width: 25%; }
-.table thead th:nth-child(2) { width: 15%; }
-.table thead th:nth-child(3) { width: 20%; }
-.table thead th:nth-child(4) { width: 20%; }
-.table thead th:nth-child(5) { width: 20%; }
+/* Set fixed widths for columns */
+.table thead th:nth-child(1) { width: 25%; }  /* Subject */
+.table thead th:nth-child(2) { width: 15%; }  /* Coefficient */
+.table thead th:nth-child(3) { width: 20%; }  /* Exam */
+.table thead th:nth-child(4) { width: 20%; }  /* CC */
+.table thead th:nth-child(5) { width: 20%; }  /* TP */
 
 /* ================= RESULTS BOX ================= */
 .result {
@@ -192,14 +190,9 @@ p {
   .table thead th:nth-child(4) { width: 20%; }
   .table thead th:nth-child(5) { width: 20%; }
 
-  #calcButton {
+  #calcButton, #resetButton {
     font-size: 1em;
     padding: 10px 20px;
-  }
-
-  #resetButton {
-    font-size: 1em;
-    padding: 10px 15px;
   }
 
   .result h3 {
