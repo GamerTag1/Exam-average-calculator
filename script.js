@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     subjects.forEach((subject, index) => {
       const examVal = document.getElementById("exam_" + index)?.value || "";
-      const ccVal = document.getElementById("cc_" + index)?.value || "";
+      const ccVal   = document.getElementById("cc_" + index)?.value || "";
       examValues.push(examVal);
       ccValues.push(ccVal);
       if (subject.hasTP) {
@@ -163,8 +163,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
   function loadStorage() {
     const examValues = JSON.parse(localStorage.getItem("exam_scores") || "[]");
-    const ccValues = JSON.parse(localStorage.getItem("cc_scores") || "[]");
-    const tpValues = JSON.parse(localStorage.getItem("tp_scores") || "[]");
+    const ccValues   = JSON.parse(localStorage.getItem("cc_scores") || "[]");
+    const tpValues   = JSON.parse(localStorage.getItem("tp_scores") || "[]");
 
     subjects.forEach((subject, index) => {
       const examField = document.getElementById("exam_" + index);
@@ -189,9 +189,10 @@ document.addEventListener("DOMContentLoaded", function() {
     let totalCoefficients  = 0;
 
     // Build results
-    const resultsTitle = languages[currentLanguage].resultsTitle;
-    const overallTitle = languages[currentLanguage].overallTitle;
-    let resultsHtml = `<h3>${resultsTitle}</h3><ul>`;
+    const dict         = languages[currentLanguage];
+    const resultsTitle = dict.resultsTitle;
+    const overallTitle = dict.overallTitle;
+    let resultsHtml    = `<h3>${resultsTitle}</h3><ul>`;
 
     subjects.forEach((subject, index) => {
       // Retrieve user input
@@ -224,7 +225,29 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("resultDiv").innerHTML = resultsHtml;
   }
 
-  // ================= 7. INITIALIZE EVERYTHING =================
+  // ================= 7. RESET FUNCTION =================
+  function resetCalculator() {
+    // 7A. Clear all inputs
+    subjects.forEach((subject, index) => {
+      const examField = document.getElementById("exam_" + index);
+      const ccField   = document.getElementById("cc_" + index);
+      const tpField   = document.getElementById("tp_" + index);
+
+      if (examField) examField.value = "";
+      if (ccField)   ccField.value   = "";
+      if (tpField)   tpField.value   = "";
+    });
+
+    // 7B. Clear localStorage
+    localStorage.removeItem("exam_scores");
+    localStorage.removeItem("cc_scores");
+    localStorage.removeItem("tp_scores");
+
+    // 7C. Clear results
+    document.getElementById("resultDiv").innerHTML = "";
+  }
+
+  // ================= 8. INITIALIZE EVERYTHING =================
   // Render the table for the first time
   renderSubjects();
   // Load stored values
@@ -240,4 +263,7 @@ document.addEventListener("DOMContentLoaded", function() {
       updateLanguage();
     });
   });
+
+  // Hook up the RESET button
+  document.getElementById("resetButton").addEventListener("click", resetCalculator);
 });
