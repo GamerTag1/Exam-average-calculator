@@ -4,6 +4,7 @@ body {
   padding-top: 40px;
   font-size: 1.1em;
   color: #333;
+  margin: 0; /* Remove default margin to ensure full width usage */
 }
 
 .container {
@@ -29,10 +30,17 @@ p {
   margin-bottom: 30px;
 }
 
+/* Table container for responsive overflow */
+.table-container {
+  width: 100%;
+  overflow-x: auto; /* Scroll horizontally if table is too wide */
+}
+
 table {
   margin-bottom: 30px;
   font-size: 1.1em;
   width: 100%;
+  border-collapse: collapse;
 }
 
 table td, table th {
@@ -213,6 +221,7 @@ input:checked + .slider:before {
 .lang-code {
   font-weight: bold;
 }
+
 /* Dark Mode Text Color Fix */
 body.dark-mode,
 body.dark-mode h1,
@@ -223,4 +232,51 @@ body.dark-mode td,
 body.dark-mode .lang-code,
 body.dark-mode .flag-icon {
   color: #c4c4c4 !important;
+}
+
+/* ================= MOBILE RESPONSIVENESS ================= */
+@media (max-width: 768px) {
+  /* Center Header Items (Dark Mode & Language) */
+  .d-flex.justify-content-between.align-items-center.mb-3 {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* Center Dark Mode Switch */
+  .dark-mode-switch {
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  /* Make Language Buttons stack horizontally (centered) */
+  .language-selector {
+    justify-content: center;
+  }
+  .language-list {
+    flex-direction: row;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  /* Adjust Table for Mobile */
+  .table {
+    font-size: 0.9em;
+  }
+  .table th, .table td {
+    padding: 6px;
+  }
+
+  /* Center the Result Box */
+  #resultDiv {
+    text-align: center;
+    font-size: 1.2em;
+  }
+
+  /* Fix Footer on Small Screens */
+  .footer-bottom-right {
+    position: static;
+    text-align: center;
+    margin-top: 20px;
+  }
 }
