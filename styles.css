@@ -1,7 +1,7 @@
 /* ================= GLOBAL STYLES ================= */
 body {
   font-family: Arial, sans-serif;
-  background-color: #e0f2f1;  /* Light teal background */
+  background-color: #e0f2f1; /* Light teal background */
   color: #333;
   margin: 0;
   padding: 40px 0;
@@ -16,7 +16,10 @@ body {
   margin: auto;
 }
 
-/* Headings & Paragraphs */
+/* ================= SECTION INDICATORS (Optional) ================= */
+/* You can include a fixed navigation if desired */
+
+/* ================= HEADINGS & PARAGRAPHS ================= */
 h1 {
   color: #00695c;
   font-size: 2.5em;
@@ -52,7 +55,6 @@ p {
   overflow-wrap: break-word;
 }
 
-/* Set fixed widths for columns */
 .table thead th:nth-child(1) { width: 25%; }
 .table thead th:nth-child(2) { width: 15%; }
 .table thead th:nth-child(3) { width: 20%; }
@@ -124,14 +126,14 @@ p {
   transform: scale(1.05);
 }
 
-/* Preset Buttons (S3 / S4) */
+/* Preset Buttons */
 .preset-container {
   text-align: center;
   margin-bottom: 20px;
 }
 
 .btn-preset {
-  background: linear-gradient(45deg, #1e8dfd, #5badff);
+  background: linear-gradient(45deg, #2d96ff, #70b5fa);
   color: #fff;
   border: none;
   padding: 10px 20px;
@@ -142,13 +144,17 @@ p {
   margin: 0 10px;
 }
 
+/* Active preset button will have a red border */
+.btn-preset.active {
+  border: 2px solid rgb(0, 0, 0);
+}
+
 .btn-preset:hover {
   transform: scale(1.05);
-  background: linear-gradient(45deg, #4e94fd, #88ccff);
+  background: linear-gradient(45deg, #5599ff, #88ccff);
 }
 
 /* ================= FOOTER ================= */
-/* Footer now appears at the bottom under all content */
 .footer-bottom {
   margin-top: 40px;
   text-align: center;
@@ -222,4 +228,20 @@ p {
     font-size: 1em;
     padding: 10px;
   }
+}
+/* ================= Logo & Top Bar ================= */
+.top-bar {
+  margin-top: 20px; /* add some spacing if needed */
+}
+
+.logo-container img {
+  max-height: 80px; /* Adjust as desired */
+  width: auto;
+  /* Optional margin to separate from the container edge */
+  margin-left: 0;
+}
+
+/* Example: if you want the logo smaller or bigger, adjust max-height or width */
+#logo {
+  display: block;
 }
