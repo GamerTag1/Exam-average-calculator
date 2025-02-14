@@ -39,7 +39,7 @@ p {
 .table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed; /* Force columns to stay within phone width */
+  table-layout: fixed; /* Fixed layout for small screens */
 }
 
 .table th,
@@ -124,13 +124,36 @@ p {
   transform: scale(1.05);
 }
 
+/* Preset Buttons (S3 / S4) */
+.preset-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.btn-preset {
+  background: linear-gradient(45deg, #4a92ff, #5aadff);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1em;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.3s, background 0.3s;
+  margin: 0 10px;
+}
+
+.btn-preset:hover {
+  transform: scale(1.05);
+  background: linear-gradient(45deg, #3787ff, #88ccff);
+}
+
 /* ================= FOOTER ================= */
-.footer-bottom-right {
-  position: fixed;
-  bottom: 10px;
-  right: 20px;
+.footer-bottom {
+  margin-top: 40px;
+  text-align: center;
   font-size: 14px;
   font-weight: bold;
+  color: #333;
 }
 
 /* ================= LANGUAGE SELECTOR ================= */
@@ -178,35 +201,24 @@ p {
     padding: 20px;
     margin: 0 10px;
   }
-
   .table th, .table td {
     padding: 8px;
     font-size: 0.9em;
   }
-
   .table thead th:nth-child(1) { width: 26%; }
   .table thead th:nth-child(2) { width: 14%; }
   .table thead th:nth-child(3) { width: 20%; }
   .table thead th:nth-child(4) { width: 20%; }
   .table thead th:nth-child(5) { width: 20%; }
-
-  #calcButton, #resetButton {
-    font-size: 1em;
-    padding: 10px 20px;
+  #calcButton, #resetButton, .btn-preset {
+    font-size: 0.9em;
+    padding: 8px 15px;
   }
-
   .result h3 {
     font-size: 1.5em;
   }
-
   .result ul li {
     font-size: 1em;
     padding: 10px;
-  }
-
-  .footer-bottom-right {
-    position: static;
-    text-align: center;
-    margin-top: 20px;
   }
 }

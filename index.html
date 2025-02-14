@@ -33,8 +33,13 @@
     <h1 class="text-center" id="pageTitle">Exam Average Calculator</h1>
     <p class="text-center" id="pageSubtitle">Calculate your exam average easily!</p>
 
+    <!-- Preset Buttons Container -->
+    <div class="preset-container text-center mb-3">
+      <button type="button" id="s3Button" class="btn-preset">S3</button>
+      <button type="button" id="s4Button" class="btn-preset">S4</button>
+    </div>
+
     <form id="calcForm">
-      <!-- Table Container for Responsiveness -->
       <div class="table-container">
         <table class="table table-bordered" id="scoresTable">
           <thead>
@@ -62,12 +67,12 @@
     </form>
 
     <div id="resultDiv" class="result"></div>
-  </div>
 
-  <!-- Footer at bottom right -->
-  <footer class="footer-bottom-right">
-    <p>Walid &copy; 2050</p>
-  </footer>
+    <!-- Footer placed normally at the bottom -->
+    <footer class="footer-bottom">
+      <p>Walid &copy; 2050</p>
+    </footer>
+  </div>
 
   <!-- jQuery and Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
