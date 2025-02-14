@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function() {
       thCoefficient: "Coefficient",
       thExam: "Exam Score",
       thCC: "CC Score",
-      thTP: "TP Score (if applicable)",
+      thTP: "TP Score",
       calcButton: "Calculate Average",
       resultsTitle: "Subject Averages:",
       overallTitle: "Overall Average:"
@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function() {
       thCoefficient: "Coefficient",
       thExam: "Note d'Examen",
       thCC: "Note de CC",
-      thTP: "Note de TP (si applicable)",
+      thTP: "Note de TP",
       calcButton: "Calculer la Moyenne",
       resultsTitle: "Moyennes par Matière :",
       overallTitle: "Moyenne Générale :"
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function() {
       thCoefficient: "المعامل",
       thExam: "درجة الامتحان",
       thCC: "درجة التكوين",
-      thTP: "درجة التدريب (إن وجد)",
+      thTP: "درجة التدريب",
       calcButton: "احسب المعدل",
       resultsTitle: "المعدلات حسب المادة:",
       overallTitle: "المعدل العام:"
