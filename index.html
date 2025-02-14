@@ -10,10 +10,14 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.4.6/css/flag-icon.min.css">
   <!-- Custom CSS -->
   <link rel="stylesheet" href="styles.css">
-  <link rel="icon" type="image/png" href="image/fivcon.png">
 </head>
 <body>
   <div class="container">
+    <!-- Logo at Top Left -->
+    <div class="logo-container">
+      <img id="logo" src="image/fivcon.png" alt="Logo">
+    </div>
+
     <!-- Language Selector (Top-Right) -->
     <div class="d-flex justify-content-end align-items-center mb-3">
       <div class="language-selector">
@@ -34,45 +38,53 @@
     <h1 class="text-center" id="pageTitle">Exam Average Calculator</h1>
     <p class="text-center" id="pageSubtitle">Calculate your exam average easily!</p>
 
-    <!-- Preset Buttons Container -->
-    <div class="preset-container text-center mb-3">
-      <button type="button" id="s3Button" class="btn-preset">S3</button>
-      <button type="button" id="s4Button" class="btn-preset">S4</button>
-    </div>
-
-    <form id="calcForm">
-      <div class="table-container">
-        <table class="table table-bordered" id="scoresTable">
-          <thead>
-            <tr>
-              <th id="thSubject">Subject</th>
-              <th id="thCoefficient">Coefficient</th>
-              <th id="thExam">Exam Score</th>
-              <th id="thCC">CC Score</th>
-              <th id="thTP">TP Score </th>
-            </tr>
-          </thead>
-          <tbody id="subjectsTable">
-            <!-- Dynamically generated rows -->
-          </tbody>
-        </table>
+    <!-- Preset Buttons Section -->
+    <section id="presets">
+      <div class="preset-container text-center mb-3">
+        <button type="button" id="s1Button" class="btn-preset">S1</button>
+        <button type="button" id="s2Button" class="btn-preset">S2</button>
+        <button type="button" id="s3Button" class="btn-preset">S3</button>
+        <button type="button" id="s4Button" class="btn-preset">S4</button>
       </div>
-      <div class="text-center">
-        <button type="button" id="calcButton" class="btn btn-primary">
-          Calculate Average
-        </button>
-        <button type="button" id="resetButton" class="btn btn-secondary ml-2">
-          Reset
-        </button>
-      </div>
-    </form>
+    </section>
 
-    <div id="resultDiv" class="result"></div>
-    
-    <!-- Footer placed after the main container -->
-    <footer class="footer-bottom">
-      <p>Walid &copy; 2025</p>
-    </footer>
+    <!-- Table Section -->
+    <section id="tableSection">
+      <form id="calcForm">
+        <div class="table-container">
+          <table class="table table-bordered" id="scoresTable">
+            <thead>
+              <tr>
+                <th id="thSubject">Subject</th>
+                <th id="thCoefficient">Coefficient</th>
+                <th id="thExam">Exam Score</th>
+                <th id="thCC">CC Score</th>
+                <th id="thTP">TP Score (if applicable)</th>
+              </tr>
+            </thead>
+            <tbody id="subjectsTable">
+              <!-- Table rows are generated dynamically -->
+            </tbody>
+          </table>
+        </div>
+        <div class="text-center">
+          <button type="button" id="calcButton" class="btn btn-primary">Calculate Average</button>
+          <button type="button" id="resetButton" class="btn btn-secondary ml-2">Reset</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Results Section -->
+    <section id="resultsSection">
+      <div id="resultDiv" class="result"></div>
+    </section>
+
+    <!-- Footer Section -->
+    <section id="footerSection">
+      <footer class="footer-bottom">
+        <p>Walid &copy; 2025</p>
+      </footer>
+    </section>
   </div>
 
   <!-- jQuery and Bootstrap JS -->
