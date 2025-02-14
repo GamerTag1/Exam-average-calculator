@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function() {
       thCoefficient: "Coefficient",
       thExam: "Exam Score",
       thCC: "CC Score",
-      thTP: "TP Score",
+      thTP: "TP Score (if applicable)",
       calcButton: "Calculate Average",
       resultsTitle: "Subject Averages:",
       overallTitle: "Overall Average:"
@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function() {
       thCoefficient: "Coefficient",
       thExam: "Note d'Examen",
       thCC: "Note de CC",
-      thTP: "Note de TP",
+      thTP: "Note de TP (si applicable)",
       calcButton: "Calculer la Moyenne",
       resultsTitle: "Moyennes par Matière :",
       overallTitle: "Moyenne Générale :"
@@ -32,17 +32,23 @@ document.addEventListener("DOMContentLoaded", function() {
       thCoefficient: "المعامل",
       thExam: "درجة الامتحان",
       thCC: "درجة التكوين",
-      thTP: "درجة التدريب",
+      thTP: "درجة التدريب (إن وجد)",
       calcButton: "احسب المعدل",
       resultsTitle: "المعدلات حسب المادة:",
       overallTitle: "المعدل العام:"
     }
   };
 
+  // Error message for CC over 20
+  const ccErrorMessages = {
+    en: "CC score over limit (max 20)",
+    fr: "Note de CC hors limite (max 20)",
+    ar: "درجة التكوين فوق الحد (20 كحد أقصى)"
+  };
+
   // ================= 2. SUBJECTS WITH MULTIPLE LANGUAGES =================
-  // Each subject includes translations for its name plus a default coefficient and hasTP flag.
-  // S3 defaults: Analysis=4, Numerical Analysis=2
-  // S4 changes: Analysis=3, Numerical Analysis=3
+  // Each subject includes translations for its name plus a default coefficient and a hasTP flag.
+  // S3 defaults: Analysis=4, Numerical Analysis=2; S4 changes: Analysis=3, Numerical Analysis=3.
   let subjects = [
     { en: "Analysis",       fr: "Analyse",              ar: "تحليل",         coefficient: 4, hasTP: false },
     { en: "Chemistry",      fr: "Chimie",               ar: "كيمياء",        coefficient: 3, hasTP: true  },
@@ -57,46 +63,45 @@ document.addEventListener("DOMContentLoaded", function() {
     { en: "Rational Mechanic", fr: "Mécanique Rationnelle", ar: "ميكانيك نظري", coefficient: 3, hasTP: false }
   ];
 
-  let currentLanguage = 'en';
+  let currentLanguage = "en";
 
-  // ================= 3. LANGUAGE SWITCHING FOR UI & SUBJECT NAMES =================
+  // ================= 3. LANGUAGE SWITCHING =================
   function updateLanguage() {
     const dict = languages[currentLanguage];
-    document.getElementById('pageTitle').innerText    = dict.pageTitle;
-    document.getElementById('pageSubtitle').innerText = dict.pageSubtitle;
-    document.getElementById('thSubject').innerText    = dict.thSubject;
-    document.getElementById('thCoefficient').innerText= dict.thCoefficient;
-    document.getElementById('thExam').innerText       = dict.thExam;
-    document.getElementById('thCC').innerText         = dict.thCC;
-    document.getElementById('thTP').innerText         = dict.thTP;
-    document.getElementById('calcButton').innerText   = dict.calcButton;
+    document.getElementById("pageTitle").innerText    = dict.pageTitle;
+    document.getElementById("pageSubtitle").innerText = dict.pageSubtitle;
+    document.getElementById("thSubject").innerText    = dict.thSubject;
+    document.getElementById("thCoefficient").innerText= dict.thCoefficient;
+    document.getElementById("thExam").innerText       = dict.thExam;
+    document.getElementById("thCC").innerText         = dict.thCC;
+    document.getElementById("thTP").innerText         = dict.thTP;
+    document.getElementById("calcButton").innerText   = dict.calcButton;
     renderSubjects();
     loadStorage();
+    updateCCErrorMessages();
   }
   updateLanguage();
 
-  // Language list event listeners
-  document.querySelectorAll('.lang-item').forEach(item => {
-    item.addEventListener('click', function() {
-      currentLanguage = this.getAttribute('data-lang');
+  document.querySelectorAll(".lang-item").forEach(item => {
+    item.addEventListener("click", function() {
+      currentLanguage = this.getAttribute("data-lang");
       updateLanguage();
     });
   });
 
-  // ================= 4. RENDER SUBJECTS TABLE DYNAMICALLY =================
+  // ================= 4. RENDER SUBJECTS TABLE =================
   function renderSubjects() {
     const tbody = document.getElementById("subjectsTable");
-    tbody.innerHTML = ""; // Clear previous rows
-
+    tbody.innerHTML = "";
     subjects.forEach((subject, index) => {
       const tr = document.createElement("tr");
 
-      // Subject name in the current language
+      // Subject Name
       const tdName = document.createElement("td");
       tdName.innerText = subject[currentLanguage];
       tr.appendChild(tdName);
 
-      // Coefficient (read-only text)
+      // Coefficient (read-only)
       const tdCoef = document.createElement("td");
       tdCoef.innerText = subject.coefficient;
       tr.appendChild(tdCoef);
@@ -111,7 +116,7 @@ document.addEventListener("DOMContentLoaded", function() {
       tdExam.appendChild(inputExam);
       tr.appendChild(tdExam);
 
-      // CC Score Input
+      // CC Score Input with error span
       const tdCC = document.createElement("td");
       const inputCC = document.createElement("input");
       inputCC.type = "number";
@@ -119,6 +124,10 @@ document.addEventListener("DOMContentLoaded", function() {
       inputCC.className = "form-control";
       inputCC.id = "cc_" + index;
       tdCC.appendChild(inputCC);
+      const errorSpan = document.createElement("span");
+      errorSpan.id = "cc_error_" + index;
+      errorSpan.className = "cc-error";
+      tdCC.appendChild(errorSpan);
       tr.appendChild(tdCC);
 
       // TP Score Input (if applicable)
@@ -138,25 +147,25 @@ document.addEventListener("DOMContentLoaded", function() {
 
       tbody.appendChild(tr);
 
-      // Attach listeners for exam & CC inputs
       inputExam.addEventListener("input", updateStorage);
-      inputCC.addEventListener("input", updateStorage);
+      inputCC.addEventListener("input", function() {
+        updateStorage();
+        checkCC(inputCC, index);
+      });
     });
   }
 
-  // ================= 5. LOCAL STORAGE: SAVE & LOAD =================
+  // ================= 5. LOCAL STORAGE =================
   function updateStorage() {
     let examValues = [];
-    let ccValues   = [];
-    let tpValues   = [];
+    let ccValues = [];
+    let tpValues = [];
     let coefValues = [];
-
     subjects.forEach((subject, index) => {
       const examField = document.getElementById("exam_" + index);
-      const ccField   = document.getElementById("cc_" + index);
+      const ccField = document.getElementById("cc_" + index);
       examValues.push(examField ? examField.value : "");
       ccValues.push(ccField ? ccField.value : "");
-
       if (subject.hasTP) {
         const tpField = document.getElementById("tp_" + index);
         tpValues.push(tpField ? tpField.value : "");
@@ -173,15 +182,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
   function loadStorage() {
     const examValues = JSON.parse(localStorage.getItem("exam_scores") || "[]");
-    const ccValues   = JSON.parse(localStorage.getItem("cc_scores") || "[]");
-    const tpValues   = JSON.parse(localStorage.getItem("tp_scores") || "[]");
+    const ccValues = JSON.parse(localStorage.getItem("cc_scores") || "[]");
+    const tpValues = JSON.parse(localStorage.getItem("tp_scores") || "[]");
     const coefValues = JSON.parse(localStorage.getItem("coef_scores") || "[]");
-
     subjects.forEach((subject, index) => {
       const examField = document.getElementById("exam_" + index);
-      const ccField   = document.getElementById("cc_" + index);
-      const tpField   = document.getElementById("tp_" + index);
-
+      const ccField = document.getElementById("cc_" + index);
+      const tpField = document.getElementById("tp_" + index);
       if (examField && examValues[index] !== undefined) {
         examField.value = examValues[index];
       }
@@ -198,52 +205,87 @@ document.addEventListener("DOMContentLoaded", function() {
   }
   window.addEventListener("load", loadStorage);
 
-  // ================= 6. CALCULATE AVERAGES =================
+  // ================= 6. CHECK CC VALUE FUNCTION =================
+  function checkCC(field, index) {
+    const value = parseFloat(field.value);
+    const errorSpan = document.getElementById("cc_error_" + index);
+    if (value > 20) {
+      field.style.borderColor = "red";
+      if (errorSpan) {
+        errorSpan.innerText = ccErrorMessages[currentLanguage];
+        errorSpan.style.color = "red";
+      }
+    } else {
+      field.style.borderColor = "";
+      if (errorSpan) {
+        errorSpan.innerText = "";
+      }
+    }
+  }
+
+  function updateCCErrorMessages() {
+    subjects.forEach((subject, index) => {
+      const ccField = document.getElementById("cc_" + index);
+      if (ccField) {
+        checkCC(ccField, index);
+      }
+    });
+  }
+
+  // ================= 7. CALCULATE AVERAGES =================
   function calculateAverages() {
     let overallWeightedSum = 0;
-    let totalCoefficients  = 0;
-
-    const dict         = languages[currentLanguage];
+    let totalCoefficients = 0;
+    const dict = languages[currentLanguage];
     const resultsTitle = dict.resultsTitle;
     const overallTitle = dict.overallTitle;
-    let resultsHtml    = `<h3>${resultsTitle}</h3><ul>`;
-
+    let resultsHtml = `<h3>${resultsTitle}</h3><ul>`;
     subjects.forEach((subject, index) => {
       const examScore = parseFloat(document.getElementById("exam_" + index)?.value) || 0;
-      const ccScore   = parseFloat(document.getElementById("cc_" + index)?.value) || 0;
-      let average     = 0;
-
+      const ccScore = parseFloat(document.getElementById("cc_" + index)?.value) || 0;
+      let average = 0;
+      let requiredCC = null;
       if (subject.hasTP) {
         const tpScore = parseFloat(document.getElementById("tp_" + index)?.value) || 0;
         average = (examScore * 0.6) + (ccScore * 0.2) + (tpScore * 0.2);
+        if (average < 10) {
+          requiredCC = (10 - (examScore * 0.6 + tpScore * 0.2)) / 0.2;
+        }
       } else {
         average = (examScore * 0.6) + (ccScore * 0.4);
+        if (average < 10) {
+          requiredCC = (10 - (examScore * 0.6)) / 0.4;
+        }
       }
-
       const color = average >= 10 ? "green" : "red";
-      resultsHtml += `<li>${subject[currentLanguage]}: <span style="color: ${color}">${average.toFixed(2)}</span></li>`;
-
+      resultsHtml += `<li>${subject[currentLanguage]}: <span style="color: ${color}">${average.toFixed(2)}</span>`;
+      if (average < 10 && requiredCC !== null) {
+        if (requiredCC > 20) {
+          resultsHtml += ` (Need CC: <span style="color: red">${requiredCC.toFixed(2)}</span>)`;
+        } else {
+          resultsHtml += ` (Need CC: ${requiredCC.toFixed(2)})`;
+        }
+      }
+      resultsHtml += `</li>`;
       overallWeightedSum += average * subject.coefficient;
-      totalCoefficients  += subject.coefficient;
+      totalCoefficients += subject.coefficient;
     });
-
     resultsHtml += "</ul>";
     const overallAverage = overallWeightedSum / totalCoefficients;
-    const overallColor   = overallAverage >= 10 ? "green" : "red";
+    const overallColor = overallAverage >= 10 ? "green" : "red";
     resultsHtml += `<h3>${overallTitle} <span style="color: ${overallColor}">${overallAverage.toFixed(2)}</span></h3>`;
     document.getElementById("resultDiv").innerHTML = resultsHtml;
   }
 
-  // ================= 7. RESET FUNCTION =================
+  // ================= 8. RESET FUNCTION =================
   function resetCalculator() {
-    // Clear all input fields
     subjects.forEach((subject, index) => {
       const examField = document.getElementById("exam_" + index);
-      const ccField   = document.getElementById("cc_" + index);
-      const tpField   = document.getElementById("tp_" + index);
+      const ccField = document.getElementById("cc_" + index);
+      const tpField = document.getElementById("tp_" + index);
       if (examField) examField.value = "";
-      if (ccField)   ccField.value = "";
-      if (tpField)   tpField.value = "";
+      if (ccField) ccField.value = "";
+      if (tpField) tpField.value = "";
     });
     // Restore default coefficients (S3 preset)
     subjects = [
@@ -267,9 +309,8 @@ document.addEventListener("DOMContentLoaded", function() {
     renderSubjects();
   }
 
-  // ================= 8. PRESET BUTTONS (S3 & S4) =================
+  // ================= 9. PRESET BUTTONS (S3 & S4) =================
   function setS3Coefficients() {
-    // S3 defaults: Analysis = 4, Numerical Analysis = 2
     subjects[0].coefficient = 4; // Analysis
     subjects[8].coefficient = 2; // Numerical Analysis
     updateStorage();
@@ -278,7 +319,6 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   function setS4Coefficients() {
-    // S4: Analysis = 3, Numerical Analysis = 3
     subjects[0].coefficient = 3; // Analysis
     subjects[8].coefficient = 3; // Numerical Analysis
     updateStorage();
@@ -286,16 +326,16 @@ document.addEventListener("DOMContentLoaded", function() {
     loadStorage();
   }
 
-  // ================= 9. INITIALIZE EVERYTHING =================
+  // ================= 10. INITIALIZE EVERYTHING =================
   renderSubjects();
   loadStorage();
   document.getElementById("calcButton").addEventListener("click", calculateAverages);
   document.getElementById("resetButton").addEventListener("click", resetCalculator);
   document.getElementById("s3Button").addEventListener("click", setS3Coefficients);
   document.getElementById("s4Button").addEventListener("click", setS4Coefficients);
-  document.querySelectorAll('.lang-item').forEach(item => {
-    item.addEventListener('click', function() {
-      currentLanguage = this.getAttribute('data-lang');
+  document.querySelectorAll(".lang-item").forEach(item => {
+    item.addEventListener("click", function() {
+      currentLanguage = this.getAttribute("data-lang");
       updateLanguage();
     });
   });

@@ -18,7 +18,7 @@ body {
 
 /* Headings & Paragraphs */
 h1 {
-  color: #00695c;  /* Dark teal for headings */
+  color: #00695c;
   font-size: 2.5em;
   text-align: center;
   margin-bottom: 20px;
@@ -39,7 +39,7 @@ p {
 .table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed; /* Fixed layout for small screens */
+  table-layout: fixed;
 }
 
 .table th,
@@ -53,17 +53,17 @@ p {
 }
 
 /* Set fixed widths for columns */
-.table thead th:nth-child(1) { width: 25%; }  /* Subject */
-.table thead th:nth-child(2) { width: 15%; }  /* Coefficient */
-.table thead th:nth-child(3) { width: 20%; }  /* Exam */
-.table thead th:nth-child(4) { width: 20%; }  /* CC */
-.table thead th:nth-child(5) { width: 20%; }  /* TP */
+.table thead th:nth-child(1) { width: 25%; }
+.table thead th:nth-child(2) { width: 15%; }
+.table thead th:nth-child(3) { width: 20%; }
+.table thead th:nth-child(4) { width: 20%; }
+.table thead th:nth-child(5) { width: 20%; }
 
 /* ================= RESULTS BOX ================= */
 .result {
   margin-top: 30px;
   text-align: center;
-  background-color: #b2dfdb;  /* Lighter teal */
+  background-color: #b2dfdb;
   padding: 30px;
   border-radius: 12px;
   border: 2px solid #80cbc4;
@@ -131,7 +131,7 @@ p {
 }
 
 .btn-preset {
-  background: linear-gradient(45deg, #4a92ff, #5aadff);
+  background: linear-gradient(45deg, #66b2ff, #99ccff);
   color: #fff;
   border: none;
   padding: 10px 20px;
@@ -144,10 +144,11 @@ p {
 
 .btn-preset:hover {
   transform: scale(1.05);
-  background: linear-gradient(45deg, #3787ff, #88ccff);
+  background: linear-gradient(45deg, #5599ff, #88ccff);
 }
 
 /* ================= FOOTER ================= */
+/* Footer now appears at the bottom under all content */
 .footer-bottom {
   margin-top: 40px;
   text-align: center;
