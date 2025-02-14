@@ -39,15 +39,26 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   };
 
-  // Error message for CC over 20
+  // Error messages for scores over 20
+  const examErrorMessages = {
+    en: "Exam score over limit (max 20)",
+    fr: "Note d'Examen hors limite (max 20)",
+    ar: "درجة الامتحان فوق الحد (20 كحد أقصى)"
+  };
+
   const ccErrorMessages = {
     en: "CC score over limit (max 20)",
     fr: "Note de CC hors limite (max 20)",
     ar: "درجة التكوين فوق الحد (20 كحد أقصى)"
   };
 
+  const tpErrorMessages = {
+    en: "TP score over limit (max 20)",
+    fr: "Note de TP hors limite (max 20)",
+    ar: "درجة التدريب فوق الحد (20 كحد أقصى)"
+  };
+
   // ================= 2. SUBJECTS WITH MULTIPLE LANGUAGES =================
-  // Each subject includes translations for its name plus a default coefficient and a hasTP flag.
   // S3 defaults: Analysis=4, Numerical Analysis=2; S4 changes: Analysis=3, Numerical Analysis=3.
   let subjects = [
     { en: "Analysis",       fr: "Analyse",              ar: "تحليل",         coefficient: 4, hasTP: false },
@@ -89,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
 
-  // ================= 4. RENDER SUBJECTS TABLE =================
+  // ================= 4. RENDER SUBJECTS TABLE DYNAMICALLY =================
   function renderSubjects() {
     const tbody = document.getElementById("subjectsTable");
     tbody.innerHTML = "";
@@ -116,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function() {
       tdExam.appendChild(inputExam);
       tr.appendChild(tdExam);
 
-      // CC Score Input with error span
+      // CC Score Input with error message span
       const tdCC = document.createElement("td");
       const inputCC = document.createElement("input");
       inputCC.type = "number";
@@ -130,7 +141,7 @@ document.addEventListener("DOMContentLoaded", function() {
       tdCC.appendChild(errorSpan);
       tr.appendChild(tdCC);
 
-      // TP Score Input (if applicable)
+      // TP Score Input (if applicable) with error message span (optional)
       const tdTP = document.createElement("td");
       if (subject.hasTP) {
         const inputTP = document.createElement("input");
@@ -147,7 +158,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
       tbody.appendChild(tr);
 
-      inputExam.addEventListener("input", updateStorage);
+      inputExam.addEventListener("input", function() {
+        updateStorage();
+        checkExam(inputExam, index);
+      });
       inputCC.addEventListener("input", function() {
         updateStorage();
         checkCC(inputCC, index);
@@ -155,11 +169,11 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  // ================= 5. LOCAL STORAGE =================
+  // ================= 5. LOCAL STORAGE: SAVE & LOAD =================
   function updateStorage() {
     let examValues = [];
-    let ccValues = [];
-    let tpValues = [];
+    let ccValues   = [];
+    let tpValues   = [];
     let coefValues = [];
     subjects.forEach((subject, index) => {
       const examField = document.getElementById("exam_" + index);
@@ -205,7 +219,34 @@ document.addEventListener("DOMContentLoaded", function() {
   }
   window.addEventListener("load", loadStorage);
 
-  // ================= 6. CHECK CC VALUE FUNCTION =================
+  // ================= 6. CHECK SCORE FUNCTIONS =================
+  function checkExam(field, index) {
+    const value = parseFloat(field.value);
+    const errorSpan = document.getElementById("cc_error_" + index); // We'll reuse the same error span for exam if needed
+    // We'll add a new exam error property if needed.
+    if (value > 20) {
+      field.style.borderColor = "red";
+      // Display exam error in the same span or separate? We'll create separate exam error message.
+      // For clarity, we'll use a different mechanism:
+      if (!field.nextSibling || !field.nextSibling.classList.contains("exam-error")) {
+        const examErrorSpan = document.createElement("span");
+        examErrorSpan.className = "exam-error";
+        examErrorSpan.style.color = "red";
+        examErrorSpan.innerText = examErrorMessages[currentLanguage];
+        field.parentNode.insertBefore(examErrorSpan, field.nextSibling);
+      } else {
+        field.nextSibling.innerText = examErrorMessages[currentLanguage];
+      }
+      return true;
+    } else {
+      field.style.borderColor = "";
+      if (field.nextSibling && field.nextSibling.classList.contains("exam-error")) {
+        field.nextSibling.innerText = "";
+      }
+      return false;
+    }
+  }
+
   function checkCC(field, index) {
     const value = parseFloat(field.value);
     const errorSpan = document.getElementById("cc_error_" + index);
@@ -215,21 +256,14 @@ document.addEventListener("DOMContentLoaded", function() {
         errorSpan.innerText = ccErrorMessages[currentLanguage];
         errorSpan.style.color = "red";
       }
+      return true;
     } else {
       field.style.borderColor = "";
       if (errorSpan) {
         errorSpan.innerText = "";
       }
+      return false;
     }
-  }
-
-  function updateCCErrorMessages() {
-    subjects.forEach((subject, index) => {
-      const ccField = document.getElementById("cc_" + index);
-      if (ccField) {
-        checkCC(ccField, index);
-      }
-    });
   }
 
   // ================= 7. CALCULATE AVERAGES =================
@@ -240,13 +274,35 @@ document.addEventListener("DOMContentLoaded", function() {
     const resultsTitle = dict.resultsTitle;
     const overallTitle = dict.overallTitle;
     let resultsHtml = `<h3>${resultsTitle}</h3><ul>`;
-    subjects.forEach((subject, index) => {
-      const examScore = parseFloat(document.getElementById("exam_" + index)?.value) || 0;
-      const ccScore = parseFloat(document.getElementById("cc_" + index)?.value) || 0;
+
+    // Use a for-loop to allow skipping subjects if exam/cc are over limit
+    for (let index = 0; index < subjects.length; index++) {
+      const subject = subjects[index];
+      const examField = document.getElementById("exam_" + index);
+      const ccField = document.getElementById("cc_" + index);
+      const tpField = subject.hasTP ? document.getElementById("tp_" + index) : null;
+      
+      const examScore = parseFloat(examField?.value) || 0;
+      const ccScore = parseFloat(ccField?.value) || 0;
+      const tpScore = subject.hasTP ? (parseFloat(tpField?.value) || 0) : 0;
+
+      // If exam or cc are over limit, skip calculation for this subject.
+      if (examScore > 20) {
+        resultsHtml += `<li>${subject[currentLanguage]}: <span style="color: red">${examErrorMessages[currentLanguage]}</span></li>`;
+        continue;
+      }
+      if (ccScore > 20) {
+        resultsHtml += `<li>${subject[currentLanguage]}: <span style="color: red">${ccErrorMessages[currentLanguage]}</span></li>`;
+        continue;
+      }
+      if (subject.hasTP && tpScore > 20) {
+        resultsHtml += `<li>${subject[currentLanguage]}: <span style="color: red">${tpErrorMessages ? tpErrorMessages[currentLanguage] : "TP score over limit (max 20)"}</span></li>`;
+        continue;
+      }
+
       let average = 0;
       let requiredCC = null;
       if (subject.hasTP) {
-        const tpScore = parseFloat(document.getElementById("tp_" + index)?.value) || 0;
         average = (examScore * 0.6) + (ccScore * 0.2) + (tpScore * 0.2);
         if (average < 10) {
           requiredCC = (10 - (examScore * 0.6 + tpScore * 0.2)) / 0.2;
@@ -269,7 +325,8 @@ document.addEventListener("DOMContentLoaded", function() {
       resultsHtml += `</li>`;
       overallWeightedSum += average * subject.coefficient;
       totalCoefficients += subject.coefficient;
-    });
+    }
+
     resultsHtml += "</ul>";
     const overallAverage = overallWeightedSum / totalCoefficients;
     const overallColor = overallAverage >= 10 ? "green" : "red";
